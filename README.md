@@ -1,11 +1,10 @@
 # MyAllocator
-simple arena allocator 
+simple arena allocator in C
 
-# MPL 2.0
-I dont know license but i think it is cool
+## License 
+- **mozilla public license 2.0**
 
-
-just kidding
+i think it is cool
 
 
 ## Implementation explain
@@ -13,5 +12,14 @@ just kidding
 - if memory fulled, add next arena(if len < MAX_ARENA), or add in front of current arena. 
 - manage arena list (head, current=tail)
 - use arena_check(point) and rewind, if you want to back
+
+## Functions
+- allocator_new
+- allocator_new_size
+- arena_alloc
+- arena_free
+- arena_reset
+- arena_rewind
+- arena_check_new
 
 bad english yeah
