@@ -2,10 +2,7 @@
 simple arena allocator in C
 
 ## License 
-- **mozilla public license 2.0**
-
-i think it is cool
-
+- **apache license 2.0**
 
 ## Implementation explain
 - make arena memory
