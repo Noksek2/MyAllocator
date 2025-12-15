@@ -1,6 +1,8 @@
 # MyAllocator
 simple arena allocator in C
 
+## UNSTABLE (v0.1.0)
+
 ## License 
 - **apache license 2.0**
 
@@ -18,5 +20,3 @@ simple arena allocator in C
 - arena_reset
 - arena_rewind
 - arena_check_new
-
-bad english yeah
