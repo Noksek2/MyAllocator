@@ -7,10 +7,10 @@ Is there any problem in this code, use Issues please.
 #ifdef _DEBUG
 size_t g_id = 0u;
 #endif
-void allocator_new(myallocator* alc,mysize_t arena_size) {
+void allocator_new(myallocator* alc, mysize_t arena_size) {
 	//new allocator - arena lists
 
-	myarena* arena = (myarena*)calloc(arena_size+ sizeof(myarena), 1);
+	myarena* arena = (myarena*)calloc(arena_size + sizeof(myarena), 1);
 	if (arena == NULL) return;
 
 	//init arena.
@@ -29,7 +29,6 @@ void allocator_new(myallocator* alc,mysize_t arena_size) {
 }
 
 void* allocator_alloc(myallocator* alc, mysize_t append_len) {
-
 	/*
 	1. just move pointer (arena->len + append_len <= arena->capa)
 	2-1. next ptr (=<next->capa)
@@ -37,7 +36,7 @@ void* allocator_alloc(myallocator* alc, mysize_t append_len) {
 
 	*/
 	if (append_len == 0)return 0;
-
+	void* ptr = NULL;
 	myarena* arena = alc->current;
 	mysize_t padding = ((append_len - 1) / sizeof(size_t) + 1) * sizeof(size_t);
 #ifdef _DEBUG
@@ -47,42 +46,41 @@ void* allocator_alloc(myallocator* alc, mysize_t append_len) {
 #ifdef _DEBUG
 		printf("Done [%X]\n", arena->ptr + arena->len);
 #endif
-		void* ptr = arena->ptr + arena->len;
+		ptr = arena->ptr + arena->len;
 		arena->len += padding;
-		return ptr;
 	}
-	else if(arena->next!=NULL){
+	else if (arena->next != NULL) {
 		if (append_len <= arena->next->capa) {
 			arena->next->len = 0u;
 			alc->current = arena->next;
+			ptr = alc->current->ptr;
 #ifdef _DEBUG
 			printf("Enable next block id:%llu [%X]\n", alc->current->id, alc->current);
 #endif
 		}
 	}
 	//arena->next ==0 || append_len > arena->next->capa 
-	else {
+	if (ptr==NULL) {
 		mysize_t new_size = max(alc->arena_size, padding);
-		myarena* new_arena = (myarena*)calloc(1, alc->arena_size + sizeof(myarena));
+		myarena* new_arena = (myarena*)calloc(1, new_size + sizeof(myarena));
 		if (new_arena == NULL)return NULL;
 		new_arena->len = padding;
 		new_arena->capa = new_size;
 		new_arena->next = arena->next;
 		arena->next = new_arena;
 		alc->current = new_arena;
-
+		ptr = alc->current->ptr;
 #ifdef _DEBUG
 		alc->current->id = g_id++;
 		printf("full! new allocator id:%llu [%X], Done [%X]\n", alc->current->id, alc->current, alc->current->ptr);
 #endif
 	}
-	return alc->current->ptr;
+	return ptr;
 	//arena_alloc(alc->head, len);
 }
 void allocator_reset(myallocator* alc) {
 	alc->head->len = 0;
 	alc->current = alc->head;
-	//arena_alloc(alc->head, len);
 }
 void allocator_rewind(myallocator* alc, myarena_check* checkpoint) {
 #ifdef _DEBUG
@@ -98,8 +96,8 @@ void allocator_rewind(myallocator* alc, myarena_check* checkpoint) {
 #endif
 
 	alc->current = checkpoint->tail;
-	alc->current->len=checkpoint->len;
-	
+	alc->current->len = checkpoint->len;
+
 #ifdef _DEBUG
 	printf("rewind : ");
 
@@ -119,7 +117,7 @@ void allocator_free(myallocator* alc) {
 	while (now != NULL) {
 		next = now->next;
 #ifdef _DEBUG
-		printf("free block id:%llu [%X]..\n", now->id, now); 
+		printf("free block id:%llu [%X]..\n", now->id, now);
 #endif
 		free(now);
 		now = next;
@@ -135,4 +133,12 @@ myarena_check arena_check_new(myallocator* alc) {
 		.len = alc->current->len,
 	};
 	return ret;
+}
+void* allocator_realloc(myallocator* alc, void* p, mysize_t old_capa, mysize_t new_capa) {
+	uint8_t* arena_ptr = (alc->current->ptr + alc->current->len);
+
+	if ((arena_ptr == (uint8_t*)p + old_capa) && (new_capa <= alc->current->capa)) {
+		return arena_ptr;
+	}
+	return allocator_alloc(alc, new_capa);
 }
