@@ -6,7 +6,7 @@ simple arena allocator in C
 ## Implementation explanation
 
 ## Structure
-```
+```c
 #ifdef _DEBUG
 extern size_t g_id;
 #endif
@@ -47,7 +47,7 @@ typedef struct myallocator {
 Defined in `myallocator.h`
 
 ## Code Example (main.c)
-```
+```c
 #include "myallocator.h"
 int main() {
 	myallocator alc;
