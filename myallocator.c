@@ -1,5 +1,5 @@
 /*
-https://github.com/Noksek2/MyAllocator Noksek2 v0.1.1
+https://github.com/Noksek2/MyAllocator Noksek2 v0.1.2
 Is there any problem in this code, use Issues please.
 */
 #include "myallocator.h"
@@ -13,9 +13,6 @@ void allocator_new(myallocator* alc, mysize_t arena_size) {
 	myarena* arena = (myarena*)calloc(arena_size + sizeof(myarena), 1);
 	if (arena == NULL) return;
 
-	//init arena.
-	//arena->next = 0;
-	//arena->len = 0;
 	arena->capa = arena_size;
 
 	alc->arena_size = arena_size;
@@ -72,7 +69,7 @@ void* allocator_alloc(myallocator* alc, mysize_t append_len) {
 		ptr = alc->current->ptr;
 #ifdef _DEBUG
 		alc->current->id = g_id++;
-		printf("full! new allocator id:%llu [%X], Done [%X]\n", alc->current->id, alc->current, alc->current->ptr);
+		printf("full! new allocator id:%llu [%X], Done [%X]\n", alc->current->id, alc->current, (uint64_t)alc->current->ptr);
 #endif
 	}
 	return ptr;
@@ -133,6 +130,11 @@ myarena_check arena_check_new(myallocator* alc) {
 		.len = alc->current->len,
 	};
 	return ret;
+}
+
+void allocator_check(myallocator* alc, myarena_check* checkpoint) {
+	myarena_check ch = arena_check_new(alc);
+	*checkpoint = ch;
 }
 void* allocator_realloc(myallocator* alc, void* p, mysize_t old_capa, mysize_t new_capa) {
 	uint8_t* arena_ptr = (alc->current->ptr + alc->current->len);

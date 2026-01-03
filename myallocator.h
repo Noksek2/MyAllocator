@@ -1,6 +1,6 @@
 
 /*
-https://github.com/Noksek2/MyAllocator Noksek2 v0.1.1
+https://github.com/Noksek2/MyAllocator Noksek2 v0.1.2
 Is there any problem in this code, use Issues please.
 */
 
@@ -22,8 +22,13 @@ Is there any problem in this code, use Issues please.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+
 #define ARENA_1MB (1024*1024-sizeof(myarena))
 #define ARENA_4MB (1024*1024*4-sizeof(myarena))
+
+#define ALLOCATOR_ALLOC(ALC, T, SZ) (T*)allocator_alloc(ALC,sizeof(T)*(SZ))
+
+
 
 #ifndef max
 #define max(A,B) ((A>B)?(A):(B))
@@ -60,6 +65,7 @@ extern "C" {
 	extern void* allocator_alloc(myallocator* alc, mysize_t len);
 	extern void allocator_free(myallocator* alc);
 	extern void allocator_reset(myallocator* alc);
+	extern void allocator_check(myallocator* alc, myarena_check* checkpoint);
 	extern myarena_check arena_check_new(myallocator* alc);
 	extern void allocator_rewind(myallocator* alc, myarena_check* checkpoint);
 
