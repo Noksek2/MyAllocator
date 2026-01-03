@@ -3,7 +3,7 @@ simple arena allocator in C
 
 ## v0.1.2
 
-## Implementation explain
+## Implementation explanation
 
 ## Structure
 ```
@@ -74,8 +74,8 @@ int main() {
 ```
 
 ## NOTICE
-This code is stable in windows 11 x64 (MSVC)
-Unsupportable in linux, etc ... 
+This code is stable on Windows 11 x64 (MSVC).
+It has not been verified on Linux, etc.
 
 ## License 
 - **apache license 2.0**
