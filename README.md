@@ -1,36 +1,19 @@
 # MyAllocator
 simple arena allocator in C
 
-## UNSTABLE (v0.1.1)
+## v0.1.2
 
 ## Implementation explain
 
-
-## Functions
-- allocator_new
-- arena_alloc
-- arena_free
-- arena_reset
-- arena_rewind
-- arena_check_new
-
-
-`myallocator.h`
+## Structure
 ```
-#ifndef __MYALLOCATOR_H__
-#define __MYALLOCATOR_H__
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#define ARENA_1MB (1024*1024-sizeof(myarena))
-#define ARENA_4MB (1024*1024*4-sizeof(myarena))
 #ifdef _DEBUG
 extern size_t g_id;
 #endif
 typedef uint32_t mysize_t;
 typedef struct myarena {
 	struct myarena* next;
-#ifdef _DEBUG //It's just debug macro
+#ifdef _DEBUG
 	size_t id;
 #endif
 	mysize_t len;
@@ -49,40 +32,50 @@ typedef struct myallocator {
 	myarena* current;
 	mysize_t arena_size;
 }myallocator;
-
-extern void allocator_new(myallocator* alc, mysize_t arena_size);
-extern void* allocator_alloc(myallocator* alc, mysize_t len);
-extern void allocator_free(myallocator* alc);
-extern void allocator_reset(myallocator* alc);
-extern myarena_check arena_check_new(myallocator* alc);
-extern void allocator_rewind(myallocator* alc, myarena_check* checkpoint);
 ```
+## Functions
+- void allocator_new(myallocator* alc, mysize_t arena_size);
+- void* allocator_alloc(myallocator* alc, mysize_t len);
+- void allocator_free(myallocator* alc);
+- void allocator_reset(myallocator* alc);
+- void allocator_check(myallocator* alc, myarena_check* checkpoint);
+- void allocator_rewind(myallocator* alc, myarena_check* checkpoint);
+- void* allocator_realloc(myallocator* alc, void* p, mysize_t old_capa, mysize_t new_capa);
+
+- myarena_check arena_check_new(myallocator* alc);
+
+Defined in `myallocator.h`
+
 ## Code Example (main.c)
 ```
-
+#include "myallocator.h"
 int main() {
 	myallocator alc;
 	allocator_new(&alc, ARENA_1MB);
-
-	//nok_data *vm_reg;
 	int* arr;
 	myarena_check check;
 	for (size_t i = 0; i < 300; i++) {
 		if (i % 3 == 0)
-			check = arena_check_new(&alc);
+			//check = arena_check_new(&alc);
+			allocator_check(&alc, &check);
 		arr = allocator_alloc(&alc, ARENA_1MB/2);
 		*arr = i;
 		printf("vm[%d]=%d\n", i, *arr);
 		if (i % 3 == 2)
 			allocator_rewind(&alc, &check);
-		if (i % 100 == 0)
-			allocator_reset(&alc);
 	}
 
 	allocator_free(&alc);
-	_getch();
+	
+	//msvc
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	return 0;
 }
 ```
+
+## NOTICE
+This code is stable in windows 11 x64 (MSVC)
+Unsupportable in linux, etc ... 
 
 ## License 
 - **apache license 2.0**

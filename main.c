@@ -9,7 +9,8 @@ int main() {
 	myarena_check check;
 	for (size_t i = 0; i < 300; i++) {
 		if (i % 3 == 0)
-			check = arena_check_new(&alc);
+			//check = arena_check_new(&alc);
+			allocator_check(&alc, &check);
 		arr = allocator_alloc(&alc, ARENA_1MB/2);
 		*arr = i;
 		printf("vm[%d]=%d\n", i, *arr);
