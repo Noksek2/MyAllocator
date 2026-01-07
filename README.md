@@ -1,5 +1,9 @@
-# MyAllocator
+# MyAllocator (Archived)
 simple arena allocator in C
+## This project merge into Mystd
+** This Repository is ARCHIVED. **
+This project has been integrated into [mystd](https://github.com/Noksek2/mystd_noksek) as a core module.
+
 
 ## v0.1.2
 
